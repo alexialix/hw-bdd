@@ -15,7 +15,7 @@ public class TransferTest {
 
     @BeforeEach
     void setup() {
-        // Открытие страницы и логин
+
         var loginPage = open("http://localhost:9999", LoginPage.class);
         var authInfo = getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
@@ -48,25 +48,20 @@ public class TransferTest {
 
     @Test
     void shouldGetErrorMessageIfAmountMoreThanAvailable() {
-        // Получаем информацию о картах
+
         var firstCardInfo = getFirstCardInfo();
         var secondCardInfo = getSecondCardInfo();
 
-        // Балансы карт до перевода
         var firstCardBalance = dashboardPage.getCardBalance(firstCardInfo);
         var secondCardBalance = dashboardPage.getCardBalance(secondCardInfo);
 
-        // Генерация некорректной суммы для перевода
         var amount = generateInvalidAmount(secondCardBalance);
 
-        // Выбираем карту для перевода
         var transferPage = dashboardPage.selectCardToTransfer(firstCardInfo);
 
-        // Пытаемся выполнить перевод и проверяем сообщение об ошибке
         transferPage.makeTransfer(String.valueOf(amount), secondCardInfo);
         transferPage.findErrorMessage("Выполнена попытка перевода суммы, превышающей остаток на карте списания");
 
-        // Проверяем, что балансы карт не изменились
         var actualBalanceFirstCard = dashboardPage.getCardBalance(firstCardInfo);
         var actualBalanceSecondCard = dashboardPage.getCardBalance(secondCardInfo);
         assertEquals(firstCardBalance, actualBalanceFirstCard);
